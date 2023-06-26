@@ -14,7 +14,7 @@ class SongsHandler {
 
   async postSongHandler(request, h) {
     try {
-      this._validator.validateNotePayload(request.payload);
+      this._validator.validateSongPayload(request.payload);
       const {
         title = 'untitled', year, genre, performer, duration,
       } = request.payload;
@@ -98,13 +98,13 @@ class SongsHandler {
 
   async putSongByIdHandler(request, h) {
     try {
-      this._validator.validateNotePayload(request.payload);
+      this._validator.validateSongPayload(request.payload);
       const {
         title, year, genre, performer, duration,
       } = request.payload;
       const { song_id } = request.params;
 
-      await this._service.editNoteById(song_id, {
+      await this._service.editSongById(song_id, {
         title, year, genre, performer, duration,
       });
 

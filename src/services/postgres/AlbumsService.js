@@ -9,32 +9,27 @@ class AlbumsService {
     this._pool = new Pool();
   }
 
-  async addAlbum({ title, year }) {
-    const album_id = nanoid(16);
+  async addAlbum({ name, year }) {
+    const id = nanoid(16);
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING album_id',
-      values: [album_id, title, year],
+      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
+      values: [id, name, year],
     };
 
     const result = await this._pool.query(query);
 
-    if (!result.rows[0].album_id) {
+    if (!result.rows[0].id) {
       throw new InvariantError('Album gagal ditambahkan');
     }
 
-    return result.rows[0].album_id;
+    return result.rows[0].id;
   }
 
-  async getAlbums() {
-    const result = await this._pool.query('SELECT * FROM albums');
-    return result.rows.map(albummapDBToModel);
-  }
-
-  async getAlbumById(album_id) {
+  async getAlbumById(id) {
     const query = {
-      text: 'SELECT * FROM albums WHERE album_id = $1',
-      values: [album_id],
+      text: 'SELECT * FROM albums WHERE id = $1',
+      values: [id],
     };
     const result = await this._pool.query(query);
 
@@ -45,10 +40,10 @@ class AlbumsService {
     return result.rows.map(albummapDBToModel)[0];
   }
 
-  async editAlbumById(album_id, { title, year }) {
+  async editAlbumById(id, { name, year }) {
     const query = {
-      text: 'UPDATE albums SET title = $2, year = $3 WHERE album_id = $1 RETURNING album_id',
-      values: [album_id, title, year],
+      text: 'UPDATE albums SET name = $1, year = $2 WHERE id = $3 RETURNING id',
+      values: [name, year, id],
     };
 
     const result = await this._pool.query(query);
@@ -58,10 +53,10 @@ class AlbumsService {
     }
   }
 
-  async deleteNoteById(album_id) {
+  async deleteAlbumById(id) {
     const query = {
-      text: 'DELETE FROM albums WHERE album_id = $1 RETURNING album_id',
-      values: [album_id],
+      text: 'DELETE FROM albums WHERE id = $1 RETURNING id',
+      values: [id],
     };
 
     const result = await this._pool.query(query);
