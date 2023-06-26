@@ -8,9 +8,8 @@ class SongsService {
   }
 
   addSong({
-    title, year, genre, performer, duration,
+    title, year, genre, performer, duration, album_id,
   }) {
-    const album_id = nanoid(16);
     const song_id = nanoid(10);
 
     const newSong = {
@@ -41,7 +40,7 @@ class SongsService {
   }
 
   editSongById(song_id, {
-    title, year, genre, performer, duration,
+    title, year, genre, performer, duration, album_id,
   }) {
     const index = this._songs.findIndex((s) => s.song_id === song_id);
 
@@ -56,6 +55,7 @@ class SongsService {
       genre,
       performer,
       duration,
+      album_id,
     };
   }
 
