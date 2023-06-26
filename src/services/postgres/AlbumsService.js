@@ -13,7 +13,7 @@ class AlbumsService {
     const album_id = nanoid(16);
 
     const query = {
-      text: 'INSERT INTO notes VALUES($1, $2, $3) RETURNING album_id',
+      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING album_id',
       values: [album_id, title, year],
     };
 
@@ -60,7 +60,7 @@ class AlbumsService {
 
   async deleteNoteById(album_id) {
     const query = {
-      text: 'DELETE FROM notes WHERE album_id = $1 RETURNING album_id',
+      text: 'DELETE FROM albums WHERE album_id = $1 RETURNING album_id',
       values: [album_id],
     };
 

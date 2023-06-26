@@ -15,7 +15,7 @@ class SongsService {
     const song_id = nanoid(10);
 
     const query = {
-      text: 'INSERT INTO notes VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING song_id',
+      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING song_id',
       values: [song_id, title, year, genre, performer, duration, album_id],
     };
 
@@ -35,7 +35,7 @@ class SongsService {
 
   async getSongById(song_id) {
     const query = {
-      text: 'SELECT * FROM notes WHERE song_id = $1',
+      text: 'SELECT * FROM songs WHERE song_id = $1',
       values: [song_id],
     };
     const result = await this._pool.query(query);
@@ -64,7 +64,7 @@ class SongsService {
 
   async deleteSongById(song_id) {
     const query = {
-      text: 'DELETE FROM songsWHERE song_id = $1 RETURNING song_id',
+      text: 'DELETE FROM songs WHERE song_id = $1 RETURNING song_id',
       values: [song_id],
     };
 
