@@ -4,32 +4,30 @@ const InvariantError = require('../exceptions/InvariantError');
 const { mapDBToModel } = require('../utils');
 const NotFoundError = require('../exceptions/NotFoundError');
 
-class NotesService {
+class AlbumsService {
   constructor() {
     this._pool = new Pool();
   }
 
-  async addNote({ title, body, tags }) {
-    const id = nanoid(16);
-    const createdAt = new Date().toISOString();
-    const updatedAt = createdAt;
+  async addAlbum({ title, year }) {
+    const album_id = nanoid(16);
 
     const query = {
-      text: 'INSERT INTO notes VALUES($1, $2, $3, $4, $5, $6) RETURNING id',
-      values: [id, title, body, tags, createdAt, updatedAt],
+      text: 'INSERT INTO notes VALUES($1, $2, $3) RETURNING album_id',
+      values: [album_id, title, year],
     };
 
     const result = await this._pool.query(query);
 
-    if (!result.rows[0].id) {
-      throw new InvariantError('Catatan gagal ditambahkan');
+    if (!result.rows[0].album_id) {
+      throw new InvariantError('Album gagal ditambahkan');
     }
 
-    return result.rows[0].id;
+    return result.rows[0].album_id;
   }
 
-  async getNotes() {
-    const result = await this._pool.query('SELECT * FROM notes');
+  async getAlbum() {
+    const result = await this._pool.query('SELECT * FROM albums');
     return result.rows.map(mapDBToModel);
   }
 
@@ -74,4 +72,4 @@ class NotesService {
     }
   }
 }
-module.exports = NotesService;
+module.exports = AlbumsService;
