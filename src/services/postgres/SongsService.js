@@ -9,23 +9,23 @@ class SongsService {
     this._pool = new Pool();
   }
 
-  async addNote({
+  async addSong({
     title, year, genre, performer, duration, album_id,
   }) {
-    const song_id = nanoid(10);
+    const id = nanoid(10);
 
     const query = {
-      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING song_id',
-      values: [song_id, title, year, genre, performer, duration, album_id],
+      text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+      values: [id, title, year, genre, performer, duration, album_id],
     };
 
     const result = await this._pool.query(query);
 
-    if (!result.rows[0].song_id) {
+    if (!result.rows[0].id) {
       throw new InvariantError('Lagu gagal ditambahkan');
     }
 
-    return result.rows[0].song_id;
+    return result.rows[0].id;
   }
 
   async getSongs() {
@@ -33,10 +33,10 @@ class SongsService {
     return result.rows.map(songmapDBToModel);
   }
 
-  async getSongById(song_id) {
+  async getSongById(id) {
     const query = {
-      text: 'SELECT * FROM songs WHERE song_id = $1',
-      values: [song_id],
+      text: 'SELECT * FROM songs WHERE id = $1',
+      values: [id],
     };
     const result = await this._pool.query(query);
 
@@ -47,12 +47,12 @@ class SongsService {
     return result.rows.map(songmapDBToModel)[0];
   }
 
-  async editSongById(song_id, {
+  async editSongById(id, {
     title, year, genre, performer, duration, album_id,
   }) {
     const query = {
-      text: 'UPDATE songs SET title = $2, year = $3, genre = $4, performer = $5 duration = $6, album_id = $7 WHERE song_id = $1 RETURNING song_id',
-      values: [song_id, title, year, genre, performer, duration, album_id],
+      text: 'UPDATE songs SET title = $2, year = $3, genre = $4, performer = $5 duration = $6, album_id = $7 WHERE id = $1 RETURNING id',
+      values: [id, title, year, genre, performer, duration, album_id],
     };
 
     const result = await this._pool.query(query);
@@ -62,10 +62,10 @@ class SongsService {
     }
   }
 
-  async deleteSongById(song_id) {
+  async deleteSongById(id) {
     const query = {
-      text: 'DELETE FROM songs WHERE song_id = $1 RETURNING song_id',
-      values: [song_id],
+      text: 'DELETE FROM songs WHERE id = $1 RETURNING id',
+      values: [id],
     };
 
     const result = await this._pool.query(query);

@@ -16,11 +16,11 @@ class SongsHandler {
     try {
       this._validator.validateSongPayload(request.payload);
       const {
-        title = 'untitled', year, genre, performer, duration,
+        title, year, genre, performer, duration, album_id,
       } = request.payload;
 
       const songId = await this._service.addSong({
-        title, year, genre, performer, duration,
+        title, year, genre, performer, duration, album_id,
       });
 
       const response = h.response({
@@ -53,22 +53,20 @@ class SongsHandler {
     }
   }
 
-  async getSongsHandler(h) {
+  async getSongsHandler() {
     const songs = await this._service.getSongs();
-    const response = h.response({
+    return {
       status: 'success',
       data: {
         songs,
       },
-    });
-    response.code(200);
-    return response;
+    };
   }
 
   async getSongByIdHandler(request, h) {
     try {
-      const { song_id } = request.params;
-      const songbyid = await this._service.getSongById(song_id);
+      const { songId } = request.params;
+      const songbyid = await this._service.getSongById(songId);
       return {
         status: 'success',
         data: {
@@ -100,12 +98,12 @@ class SongsHandler {
     try {
       this._validator.validateSongPayload(request.payload);
       const {
-        title, year, genre, performer, duration,
+        title, year, genre, performer, duration, album_id,
       } = request.payload;
-      const { song_id } = request.params;
+      const { songId } = request.params;
 
-      await this._service.editSongById(song_id, {
-        title, year, genre, performer, duration,
+      await this._service.editSongById(songId, {
+        title, year, genre, performer, duration, album_id,
       });
 
       return {
@@ -135,8 +133,8 @@ class SongsHandler {
 
   async deleteSongByIdHandler(request, h) {
     try {
-      const { song_id } = request.params;
-      await this._service.deleteSongById(song_id);
+      const { songId } = request.params;
+      await this._service.deleteSongById(songId);
 
       return {
         status: 'success',
