@@ -70,7 +70,7 @@ class SongsHandler {
       return {
         status: 'success',
         data: {
-          songbyid,
+          song: songbyid,
         },
       };
     } catch (error) {
