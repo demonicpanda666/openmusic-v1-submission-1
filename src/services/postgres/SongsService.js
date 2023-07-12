@@ -10,13 +10,13 @@ class SongsService {
   }
 
   async addSong({
-    title, year, genre, performer, duration, album_id,
+    title, year, genre, performer, duration, albumId,
   }) {
     const id = nanoid(10);
 
     const query = {
       text: 'INSERT INTO songs VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id',
-      values: [id, title, year, genre, performer, duration, album_id],
+      values: [id, title, year, genre, performer, duration, albumId],
     };
 
     const result = await this._pool.query(query);
@@ -28,8 +28,29 @@ class SongsService {
     return result.rows[0].id;
   }
 
-  async getSongs() {
-    const result = await this._pool.query('SELECT id, title, performer FROM songs');
+  async getSongs(title, performer) {
+    let query = {};
+
+    if (title !== undefined && performer !== undefined) {
+      query = {
+        text: 'SELECT id, title, performer FROM songs WHERE LOWER(title) LIKE LOWER($1) AND  LOWER(performer) LIKE LOWER($2)',
+        values: [`%${'kupu'}%`, `%${'peter'}%`],
+      };
+    } else if (title !== undefined) {
+      query = {
+        text: 'SELECT id, title, performer FROM songs WHERE LOWER (title) LIKE LOWER ($1)',
+        values: [`%${'cint'}%`],
+      };
+    } else if (performer !== undefined) {
+      query = {
+        text: 'SELECT id, title, performer FROM songs WHERE LOWER (performer) LIKE LOWER ($1)',
+        values: [`%${'chris'}%`],
+      };
+    } else {
+      query = 'SELECT id, title, performer FROM songs';
+    }
+
+    const result = await this._pool.query(query);
     return result.rows.map(songmapDBToModel);
   }
 
