@@ -26,4 +26,14 @@ const albummapDBToModel = ({
   year,
 });
 
-module.exports = { songmapDBToModel, albummapDBToModel };
+const playlistmapDBToModel = ({
+  id,
+  name,
+  username,
+}) => ({
+  id,
+  name,
+  username,
+});
+
+module.exports = { songmapDBToModel, albummapDBToModel, playlistmapDBToModel };
