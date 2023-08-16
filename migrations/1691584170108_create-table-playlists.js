@@ -18,6 +18,7 @@ exports.up = (pgm) => {
       unique: true,
       references: 'users(id)',
       notNull: true,
+      onDelete: 'cascade',
     },
   });
 };
