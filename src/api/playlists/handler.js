@@ -59,7 +59,7 @@ class PlaylistsHandler {
   }
 
   async postSongToPlaylistHandler(request, h) {
-    this._playlistsValidator.validatePlaylistSongsPayload(request.payload);
+    this._playlistsValidator.validateSongtoPlaylistPayload(request.payload);
 
     const { id: credentialId } = request.auth.credentials;
     const { id: playlistId } = request.params;
