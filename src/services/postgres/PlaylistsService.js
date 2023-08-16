@@ -15,7 +15,7 @@ class PlaylistsService {
   async verifyPlaylistsOwner(id, owner) {
     const query = {
       text: 'SELECT owner FROM playlists WHERE id = $1',
-      values: [id, owner],
+      values: [id],
     };
 
     const result = await this._pool.query(query);
@@ -102,19 +102,19 @@ class PlaylistsService {
     const id = `playlist-song-${nanoid(16)}`;
 
     const queryplaylist = {
-      text: 'INSERT INTO playlist_songs VALUES($1, $2, $3) RETURNING id',
+      text: 'INSERT INTO playlists_song VALUES($1, $2, $3) RETURNING id',
       values: [id, playlistId, songId],
     };
 
     await this._pool.query(queryplaylist);
   }
 
-  async getPlaylistwithSong(playlistId) {
+  async getSongsFromPlaylist(playlistId) {
     const QueryPlaylist = {
       text: `SELECT * 
-      FROM playlist_songs
+      FROM playlists_song
       INNER JOIN playlists ON playlists_song.playlist_id = playlists.id 
-      INNER JOIN users ON playlists_song.user_id = users.id 
+      INNER JOIN songs ON playlists_song.song_id = songs.id 
       WHERE playlist_id = $1`,
       values: [playlistId],
     };
@@ -160,7 +160,7 @@ class PlaylistsService {
 
   async deleteSongFromPlaylist(playlistId, songId) {
     const query = {
-      text: `DELETE FROM playlist_songs
+      text: `DELETE FROM playlists_song
         WHERE playlist_id = $1 AND song_id = $2 RETURNING id`,
       values: [playlistId, songId],
     };
