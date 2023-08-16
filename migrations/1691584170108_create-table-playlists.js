@@ -15,7 +15,6 @@ exports.up = (pgm) => {
     },
     owner: {
       type: 'VARCHAR(50)',
-      unique: true,
       references: 'users(id)',
       notNull: true,
       onDelete: 'cascade',
