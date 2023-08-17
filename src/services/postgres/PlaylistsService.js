@@ -111,39 +111,27 @@ class PlaylistsService {
 
   async getSongsFromPlaylist(playlistId) {
     const QueryPlaylist = {
-      text: `SELECT * 
+      text: `SELECT playlists.id as "id", playlists.name as "name", users.username as "username" 
       FROM playlists_song
       INNER JOIN playlists ON playlists_song.playlist_id = playlists.id 
-      INNER JOIN songs ON playlists_song.song_id = songs.id 
-      WHERE playlist_id = $1`,
-      values: [playlistId],
-    };
-
-    const QueryUser = {
-      text: `SELECT owner FROM playlists
-    INNER JOIN users ON playlists_song.user_id = users.id
-    WHERE users.id = $1`,
+      INNER JOIN users ON playlists.owner = users.id
+      WHERE playlists.id = $1`,
       values: [playlistId],
     };
 
     const QuerySong = {
       text: `SELECT songs.id, songs.title, songs.performer
-      FROM playlists_song
-      INNER JOIN songs ON playlists_song.song_id = songs.id
-      WHERE songs.id = $1`,
+      FROM songs
+      INNER JOIN playlists_song ON songs.id = playlists_song.song_id
+      WHERE playlists_song.playlist_id = $1`,
       values: [playlistId],
     };
 
     const playlistResult = await this._pool.query(QueryPlaylist);
-    const userResult = await this._pool.query(QueryUser);
     const songResult = await this._pool.query(QuerySong);
 
     if (!playlistResult.rowCount) {
       throw new NotFoundError('Playlist tidak ditemukan!');
-    }
-
-    if (!userResult.rowCount) {
-      throw new NotFoundError('User tidak ditemukan');
     }
 
     if (!songResult.rowCount) {
@@ -153,7 +141,7 @@ class PlaylistsService {
     return {
       id: playlistResult.rows[0].id,
       name: playlistResult.rows[0].name,
-      username: userResult.rows[0].username,
+      username: playlistResult.rows[0].username,
       songs: songResult.rows,
     };
   }
