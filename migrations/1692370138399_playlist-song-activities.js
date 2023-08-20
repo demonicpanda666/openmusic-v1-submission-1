@@ -1,7 +1,3 @@
-/* eslint-disable camelcase */
-
-exports.shorthands = undefined;
-
 exports.up = (pgm) => {
   pgm.createTable('playlist_song_activities', {
     id: {
@@ -16,14 +12,11 @@ exports.up = (pgm) => {
     },
     song_id: {
       type: 'VARCHAR(50)',
-      references: 'songs(id)',
-      onDelete: 'cascade',
+      notNull: true,
     },
     user_id: {
       type: 'VARCHAR(50)',
-      references: 'users(id)',
       notNull: true,
-      onDelete: 'cascade',
     },
     action: {
       type: 'TEXT',

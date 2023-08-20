@@ -65,18 +65,14 @@ class PlaylistsHandler {
 
     const { id: credentialId } = request.auth.credentials;
     const { id: playlistId } = request.params;
-    const { id: activityId } = request.params;
     const { songId } = request.payload;
-
     await this._playlistsservice.verifyPlaylistAccess(playlistId, credentialId);
     await this._playlistsservice.addSongtoPlaylist(playlistId, songId);
-
     const action = 'add';
     const time = new Date().toISOString();
     await this._playlistsongactivitiesservice.addSongPlaylistActivities(
-      activityId, songId, credentialId, action, time,
+      playlistId, songId, credentialId, action, time,
     );
-
     const response = h.response({
       status: 'success',
       message: 'Lagu berhasil ditambahkan ke dalam playlist',
@@ -104,7 +100,6 @@ class PlaylistsHandler {
   async deleteSongFromPlaylistByIdHandler(request, h) {
     const { id: credentialId } = request.auth.credentials;
     const { id: playlistId } = request.params;
-    const { id: activityId } = request.params;
     const { songId } = request.payload;
 
     await this._playlistsservice.verifyPlaylistAccess(playlistId, credentialId);
@@ -112,8 +107,8 @@ class PlaylistsHandler {
 
     const action = 'delete';
     const time = new Date().toISOString();
-    await this._playlistsongactivitiesservice.deleteSongPlaylistActivity(
-      activityId, songId, credentialId, action, time,
+    await this._playlistsongactivitiesservice.addSongPlaylistActivities(
+      playlistId, songId, credentialId, action, time,
     );
 
     return h.response({
@@ -128,16 +123,13 @@ class PlaylistsHandler {
     const { id: credentialId } = request.auth.credentials;
 
     await this._playlistsservice.verifyPlaylistsOwner(id, credentialId);
-    const activities = await this.playlistsongactivitiesservice.getSongPlaylistActivities(
+    const activities = await this._playlistsongactivitiesservice.getSongPlaylistActivities(
       playlistId,
     );
 
     const response = h.response({
       status: 'success',
-      data: {
-        playlistId,
-        activities,
-      },
+      data: activities,
     });
     response.code(200);
     return response;

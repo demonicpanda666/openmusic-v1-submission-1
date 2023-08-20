@@ -1,6 +1,5 @@
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
-const NotFoundError = require('../../exceptions/NotFoundError');
 const InvariantError = require('../../exceptions/InvariantError');
 
 class PlaylistsSongsActivitiesService {
@@ -8,13 +7,11 @@ class PlaylistsSongsActivitiesService {
     this._pool = new Pool();
   }
 
-  async addSongPlaylistActivities(playlistId, {
-    songId, userId, action, time,
-  }) {
+  async addSongPlaylistActivities(playlistId, songId, userId, action, time) {
     const id = `activity-${nanoid(16)}`;
 
     const query = {
-      text: 'INSERT INTO playlist_song_activities VALUES ($1, $2, $3, $4, $5, $6)',
+      text: 'INSERT INTO playlist_song_activities VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
       values: [id, playlistId, songId, userId, action, time],
     };
 
@@ -42,20 +39,6 @@ class PlaylistsSongsActivitiesService {
     return {
       playlistId, activities: result.rows,
     };
-  }
-
-  async deleteSongPlaylistActivity(playlistId, activityId) {
-    const query = {
-      text: `DELETE FROM playlist_song_activities
-        WHERE id = $1 AND playlist_id = $2 RETURNING id`,
-      values: [playlistId, activityId],
-    };
-
-    const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      throw new NotFoundError('Playlist song gagal dihapus, playlist_id dan song_id tidak ditemukan');
-    }
   }
 }
 
