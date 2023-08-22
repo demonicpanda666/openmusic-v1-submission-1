@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const path = require('path');
 
 // albums
 const albums = require('./api/album');
@@ -40,6 +41,11 @@ const _exports = require('./api/exports');
 const ProducerService = require('./services/rabbitmq/ProducerService');
 const ExportsValidator = require('./validator/exports');
 
+// uploads
+const uploads = require('./api/uploads');
+const StorageService = require('./services/storage/StorageService');
+const UploadsValidator = require('./validator/upload');
+
 const ClientError = require('./exceptions/ClientError');
 
 const init = async () => {
@@ -50,6 +56,7 @@ const init = async () => {
   const playlistsService = new PlaylistsService(collaborationsService);
   const playlistsongactivitiesService = new PlaylistsSongsActivitiesService();
   const authenticationsService = new AuthenticationsService();
+  const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -138,6 +145,13 @@ const init = async () => {
       validator: ExportsValidator,
     },
   },
+  {
+    plugin: uploads,
+    options: {
+      service: storageService,
+      validator: UploadsValidator,
+    },
+  },
   ]);
 
   server.ext('onPreResponse', (request, h) => {
@@ -163,7 +177,7 @@ const init = async () => {
         message: 'terjadi kegagalan pada server kami',
       });
       newResponse.code(500);
-      console.log(response);
+      console.log(response.message);
       return newResponse;
     }
     // jika bukan error, lanjutkan dengan response sebelumnya (tanpa terintervensi)
