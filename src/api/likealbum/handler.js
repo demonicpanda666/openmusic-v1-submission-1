@@ -2,13 +2,19 @@ class LikesHandler {
   constructor(likesService, albumsService) {
     this._likesService = likesService;
     this._albumsService = albumsService;
+
+    this.postLikeHandler = this.postLikeHandler.bind(this);
+    this.getLikesHandler = this.getLikesHandler.bind(this);
+    this.deleteLikeHandler = this.deleteLikeHandler.bind(this);
   }
 
   async postLikeHandler(request, h) {
     const { id: credentialId } = request.auth.credentials;
     const { id: albumId } = request.params;
 
-    await this._albumService.getAlbumById(albumId);
+    await this._albumsService.getAlbumById(albumId);
+
+    await this._likesService.verifyLikesAlbum(albumId, credentialId);
 
     await this._likesService.likeAlbum(credentialId, albumId);
 
@@ -60,7 +66,7 @@ class LikesHandler {
       status: 'success',
       message: 'Berhasil undo menyukai album',
     });
-    response.code(201);
+    response.code(200);
     return response;
   }
 }

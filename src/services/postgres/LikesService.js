@@ -9,6 +9,18 @@ class LikesService {
     this._cacheService = cacheService;
   }
 
+  async verifyLikesAlbum(albumId, userId) {
+    const query = {
+      text: 'SELECT id FROM user_album_likes WHERE album_id = $1 AND user_id = $2',
+      values: [albumId, userId],
+    };
+    const result = await this._pool.query(query);
+
+    if (result.rowCount > 0) {
+      throw new InvariantError('User gagal menyukai album');
+    }
+  }
+
   async likeAlbum(userId, albumId) {
     const id = `user-album-like${nanoid(16)}`;
 
