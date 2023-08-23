@@ -14,7 +14,6 @@ exports.up = (pgm) => {
     },
     cover_url: {
       type: 'TEXT',
-      notNull: false,
     },
   });
   pgm.createTable('songs', {

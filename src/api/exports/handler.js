@@ -1,7 +1,8 @@
 class ExportsHandler {
-  constructor(service, validator) {
+  constructor(service, validator, playlistsService) {
     this._service = service;
     this._validator = validator;
+    this._playlistsService = playlistsService;
 
     this.postExportSongsHandler = this.postExportSongsHandler.bind(this);
   }
@@ -9,8 +10,15 @@ class ExportsHandler {
   async postExportSongsHandler(request, h) {
     this._validator.validateExportSongsPayload(request.payload);
 
+    const { id: credentialId } = request.auth.credentials;
+    const { playlistId } = request.params;
+
+    await this._playlistsService.verifyPlaylistAccess(playlistId, credentialId);
+
+    await this._playlistsService.getSongsFromPlaylist(playlistId);
+
     const message = {
-      userId: request.auth.credentials.id,
+      playlistId,
       targetEmail: request.payload.targetEmail,
     };
 

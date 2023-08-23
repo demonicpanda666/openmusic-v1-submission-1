@@ -50,7 +50,7 @@ const UploadsValidator = require('./validator/upload');
 // user album like & cache-side
 const likesalbum = require('./api/likealbum');
 const LikesService = require('./services/postgres/LikesService');
-const CacheService = require('./services/redis/CacheService');
+//const CacheService = require('./services/redis/CacheService');
 
 const ClientError = require('./exceptions/ClientError');
 
@@ -63,8 +63,8 @@ const init = async () => {
   const playlistsongactivitiesService = new PlaylistsSongsActivitiesService();
   const authenticationsService = new AuthenticationsService();
   const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
-  const cacheService = new CacheService();
-  const likesService = new LikesService(cacheService);
+  //const cacheService = new CacheService();
+  const likesService = new LikesService();
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -154,6 +154,7 @@ const init = async () => {
     options: {
       service: ProducerService,
       validator: ExportsValidator,
+      playlistsService,
     },
   },
   {
@@ -161,6 +162,7 @@ const init = async () => {
     options: {
       service: storageService,
       validator: UploadsValidator,
+      albumsService,
     },
   },
   {
@@ -195,7 +197,7 @@ const init = async () => {
         message: 'terjadi kegagalan pada server kami',
       });
       newResponse.code(500);
-      console.log(response.message);
+      console.log(response);
       return newResponse;
     }
     // jika bukan error, lanjutkan dengan response sebelumnya (tanpa terintervensi)
