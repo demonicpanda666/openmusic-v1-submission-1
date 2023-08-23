@@ -55,7 +55,7 @@ const CacheService = require('./services/redis/CacheService');
 const ClientError = require('./exceptions/ClientError');
 
 const init = async () => {
-  const cacheService = new CacheService();
+  //const cacheService = new CacheService();
   const albumsService = new AlbumsService();
   const songsService = new SongsService();
   const usersService = new UsersService();
@@ -64,7 +64,7 @@ const init = async () => {
   const playlistsongactivitiesService = new PlaylistsSongsActivitiesService();
   const authenticationsService = new AuthenticationsService();
   const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
-  const likesService = new LikesService(cacheService);
+  const likesService = new LikesService();
 
   const server = Hapi.server({
     port: process.env.PORT,
