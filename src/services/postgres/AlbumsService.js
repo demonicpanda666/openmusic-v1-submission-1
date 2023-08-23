@@ -9,12 +9,12 @@ class AlbumsService {
     this._pool = new Pool();
   }
 
-  async addAlbum({ name, year }) {
+  async addAlbum({ name, year, cover_url }) {
     const id = nanoid(16);
 
     const query = {
-      text: 'INSERT INTO albums VALUES($1, $2, $3) RETURNING id',
-      values: [id, name, year],
+      text: 'INSERT INTO albums VALUES($1, $2, $3, $4) RETURNING id',
+      values: [id, name, year, cover_url],
     };
 
     const result = await this._pool.query(query);
@@ -54,10 +54,10 @@ class AlbumsService {
     return result;
   }
 
-  async editAlbumById(id, { name, year }) {
+  async editAlbumById(id, { name, year, cover_url }) {
     const query = {
-      text: 'UPDATE albums SET name = $1, year = $2 WHERE id = $3 RETURNING id',
-      values: [name, year, id],
+      text: 'UPDATE albums SET name = $1, year = $2, cover_url = $3 WHERE id = $4 RETURNING id',
+      values: [name, year, cover_url, id],
     };
 
     const result = await this._pool.query(query);
@@ -79,5 +79,19 @@ class AlbumsService {
       throw new NotFoundError('Album gagal dihapus. Id tidak ditemukan');
     }
   }
+
+  async updateAlbumCover(id, coverUrl) {
+    const query = {
+      text: 'UPDATE albums SET cover_url = $1 WHERE id = $2 RETURNING id',
+      values: [coverUrl, id],
+    };
+
+    const result = await this._pool.query(query);
+
+    if (!result.rowCount) {
+      throw new NotFoundError('Album gagal diperbaharui, album id tidak ditemukan');
+    }
+  }
 }
+
 module.exports = AlbumsService;

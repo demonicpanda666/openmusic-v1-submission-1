@@ -3,11 +3,11 @@ class ExportsHandler {
     this._service = service;
     this._validator = validator;
 
-    this.postExportNotesHandler = this.postExportNotesHandler.bind(this);
+    this.postExportSongsHandler = this.postExportSongsHandler.bind(this);
   }
 
-  async postExportNotesHandler(request, h) {
-    this._validator.validateExportNotesPayload(request.payload);
+  async postExportSongsHandler(request, h) {
+    this._validator.validateExportSongsPayload(request.payload);
 
     const message = {
       userId: request.auth.credentials.id,

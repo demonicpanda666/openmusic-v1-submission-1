@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Inert = require('@hapi/inert');
 const path = require('path');
 
 // albums
@@ -46,6 +47,11 @@ const uploads = require('./api/uploads');
 const StorageService = require('./services/storage/StorageService');
 const UploadsValidator = require('./validator/upload');
 
+// user album like & cache-side
+const likesalbum = require('./api/likealbum');
+const LikesService = require('./services/postgres/LikesService');
+const CacheService = require('./services/redis/CacheService');
+
 const ClientError = require('./exceptions/ClientError');
 
 const init = async () => {
@@ -57,6 +63,8 @@ const init = async () => {
   const playlistsongactivitiesService = new PlaylistsSongsActivitiesService();
   const authenticationsService = new AuthenticationsService();
   const storageService = new StorageService(path.resolve(__dirname, 'api/uploads/file/images'));
+  const cacheService = new CacheService();
+  const likesService = new LikesService(cacheService);
 
   const server = Hapi.server({
     port: process.env.PORT,
@@ -72,6 +80,9 @@ const init = async () => {
   await server.register([
     {
       plugin: Jwt,
+    },
+    {
+      plugin: Inert,
     },
   ]);
 
@@ -150,6 +161,13 @@ const init = async () => {
     options: {
       service: storageService,
       validator: UploadsValidator,
+    },
+  },
+  {
+    plugin: likesalbum,
+    options: {
+      likesService,
+      albumsService,
     },
   },
   ]);
